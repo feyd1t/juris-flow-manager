@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -19,7 +18,7 @@ import {
 import { StatusBadge } from "@/components/StatusBadge";
 import { npjService, ClientRequest } from "@/services/npjService";
 import { Search, Users, Check, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 type RequestStatus = 'new' | 'reviewed' | 'accepted' | 'rejected';
 
@@ -49,7 +48,6 @@ const ClientRequestsPage = () => {
   useEffect(() => {
     let result = requests;
 
-    // Apply search term filter
     if (searchTerm) {
       result = result.filter(
         (r) =>
@@ -59,7 +57,6 @@ const ClientRequestsPage = () => {
       );
     }
 
-    // Apply status filter
     if (statusFilter !== "all") {
       result = result.filter((r) => r.status === statusFilter);
     }
@@ -67,18 +64,16 @@ const ClientRequestsPage = () => {
     setFilteredRequests(result);
   }, [requests, searchTerm, statusFilter]);
 
-  // Format date for display
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('pt-BR');
   };
 
-  // Handle status update
   const handleStatusUpdate = async (requestId: string, newStatus: RequestStatus) => {
     try {
       const updatedRequest = await npjService.updateClientRequest(requestId, {
         status: newStatus,
         reviewedAt: new Date(),
-        reviewedBy: "Admin NPJ", // In a real app, this would come from the logged-in user
+        reviewedBy: "Admin NPJ",
       });
 
       if (updatedRequest) {
@@ -98,11 +93,17 @@ const ClientRequestsPage = () => {
             message = "Solicitação marcada como revisada!";
             break;
         }
-        toast.success(message);
+        toast({
+          title: message,
+          description: `ID: ${requestId}`,
+        });
       }
     } catch (error) {
       console.error("Error updating request status:", error);
-      toast.error("Erro ao atualizar o status da solicitação");
+      toast({
+        title: "Erro ao atualizar o status da solicitação",
+        variant: "destructive",
+      });
     }
   };
 
@@ -141,7 +142,6 @@ const ClientRequestsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Search and filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -171,7 +171,6 @@ const ClientRequestsPage = () => {
             </div>
           </div>
 
-          {/* Requests table */}
           {filteredRequests.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />

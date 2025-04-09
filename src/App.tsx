@@ -15,6 +15,10 @@ import Layout from "./components/Layout";
 import ClientLayout from "./components/ClientLayout";
 import RequestForm from "./pages/RequestForm";
 import RequestStatus from "./pages/RequestStatus";
+import RegisterSelect from "./pages/RegisterSelect";
+import RegisterLawyer from "./pages/RegisterLawyer";
+import RegisterClient from "./pages/RegisterClient";
+import RegisterProfessor from "./pages/RegisterProfessor";
 import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
@@ -41,8 +45,12 @@ const App = () => {
           <SidebarProvider defaultOpen={!isMobileDevice}>
             <BrowserRouter>
               <Routes>
-                {/* Auth Route */}
+                {/* Auth Routes */}
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterSelect />} />
+                <Route path="/register/lawyer" element={<RegisterLawyer />} />
+                <Route path="/register/client" element={<RegisterClient />} />
+                <Route path="/register/professor" element={<RegisterProfessor />} />
                 
                 {/* Protected NPJ Staff/Student Routes */}
                 <Route path="/" element={<Layout />}>

@@ -79,107 +79,113 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-npj-blue">NPJ Flow Manager</h1>
-          <p className="text-gray-600 mt-2">Sistema de Gestão do Núcleo de Prática Jurídica</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-md">
+        <div className="flex flex-col items-center justify-center space-y-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-npj-blue">NPJ Flow Manager</h1>
+            <p className="text-gray-600 mt-2">Sistema de Gestão do Núcleo de Prática Jurídica</p>
+          </div>
+          
+          <Card className="w-full shadow-lg">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl text-center">Login</CardTitle>
+              <CardDescription className="text-center">
+                Entre com suas credenciais para acessar o sistema.
+              </CardDescription>
+            </CardHeader>
+            <form onSubmit={handleLogin}>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="email">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="password">
+                    Senha
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-4">
+                <Button
+                  type="submit"
+                  className="w-full bg-npj-blue hover:bg-blue-700"
+                  disabled={isLoggingIn}
+                >
+                  {isLoggingIn ? "Entrando..." : "Entrar"}
+                </Button>
+                
+                <div className="text-center text-sm">
+                  Ainda não tem uma conta?{" "}
+                  <Link to="/register" className="text-npj-blue hover:underline font-medium">
+                    Cadastre-se
+                  </Link>
+                </div>
+                
+                <div className="w-full">
+                  <p className="text-xs text-gray-500 text-center mb-2">
+                    Para fins de demonstração, você pode usar:
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fillLoginForm('admin')}
+                      className="text-xs"
+                    >
+                      Admin
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fillLoginForm('student')}
+                      className="text-xs"
+                    >
+                      Estudante
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fillLoginForm('lawyer')}
+                      className="text-xs"
+                    >
+                      Advogado
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fillLoginForm('client')}
+                      className="text-xs"
+                    >
+                      Cliente
+                    </Button>
+                  </div>
+                </div>
+              </CardFooter>
+            </form>
+          </Card>
         </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>Entre com suas credenciais para acessar o sistema.</CardDescription>
-          </CardHeader>
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="email">
-                  Email
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="password">
-                  Senha
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col">
-              <Button
-                type="submit"
-                className="w-full bg-npj-blue hover:bg-blue-700"
-                disabled={isLoggingIn}
-              >
-                {isLoggingIn ? "Entrando..." : "Entrar"}
-              </Button>
-              
-              <div className="text-center mt-4 text-sm">
-                Ainda não tem uma conta?{" "}
-                <Link to="/register" className="text-npj-blue hover:underline font-medium">
-                  Cadastre-se
-                </Link>
-              </div>
-              
-              <p className="text-xs text-gray-500 text-center mt-4 mb-2">
-                Para fins de demonstração, você pode usar:
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fillLoginForm('admin')}
-                  className="text-xs"
-                >
-                  Admin
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fillLoginForm('student')}
-                  className="text-xs"
-                >
-                  Estudante
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fillLoginForm('lawyer')}
-                  className="text-xs"
-                >
-                  Advogado
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fillLoginForm('client')}
-                  className="text-xs"
-                >
-                  Cliente
-                </Button>
-              </div>
-            </CardFooter>
-          </form>
-        </Card>
       </div>
     </div>
   );

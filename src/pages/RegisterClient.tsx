@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -31,7 +30,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const RegisterClient = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signup } = useAuth();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,14 +59,19 @@ const RegisterClient = () => {
     setIsSubmitting(true);
     
     try {
-      // Simular um atraso de requisição
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const success = await signup(
+        values.email, 
+        values.password,
+        values.name,
+        'client'
+      );
       
-      // Aqui seria a integração com a API real
-      console.log("Dados de registro:", values);
-      
-      toast.success("Cadastro realizado com sucesso! Você já pode fazer login.");
-      navigate("/login");
+      if (success) {
+        // Additional profile data can be saved after signup
+        // This data is already stored in metadata, but you can save extended data here
+        toast.success("Cadastro realizado com sucesso! Você já pode fazer login.");
+        navigate("/login");
+      }
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       toast.error("Erro ao processar cadastro. Tente novamente.");

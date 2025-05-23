@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -16,7 +15,7 @@ const LoginPage = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
-  const { login, user } = useAuth();
+  const { login, user, profile } = useAuth();
   const navigate = useNavigate();
 
   // Welcome message typing effect
@@ -63,10 +62,10 @@ const LoginPage = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      redirectBasedOnRole(user.role);
+    if (user && profile) {
+      redirectBasedOnRole(profile.role);
     }
-  }, [user]);
+  }, [user, profile]);
 
   const redirectBasedOnRole = (role: UserRole) => {
     if (role === 'client') {
@@ -89,9 +88,7 @@ const LoginPage = () => {
     try {
       const success = await login(email, password);
       
-      if (success) {
-        toast.success("Login realizado com sucesso!");
-      } else {
+      if (!success) {
         toast.error("Email ou senha incorretos");
       }
     } catch (error) {

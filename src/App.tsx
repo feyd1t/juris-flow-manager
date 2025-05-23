@@ -39,11 +39,11 @@ const App = () => {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider delayDuration={isMobileDevice ? 700 : 400}>
-          <Toaster />
-          <SidebarProvider defaultOpen={!isMobileDevice}>
-            <BrowserRouter>
+      <TooltipProvider delayDuration={isMobileDevice ? 700 : 400}>
+        <Toaster />
+        <SidebarProvider defaultOpen={!isMobileDevice}>
+          <BrowserRouter>
+            <AuthProvider>
               <Routes>
                 {/* Auth Routes */}
                 <Route path="/login" element={<LoginPage />} />
@@ -68,10 +68,10 @@ const App = () => {
                 {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </SidebarProvider>
-        </TooltipProvider>
-      </AuthProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </SidebarProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };

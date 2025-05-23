@@ -1,189 +1,234 @@
-
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React, { useState } from 'react';
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/context/AuthContext";
-import { npjService } from "@/services/npjService";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 const RequestForm = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user, profile } = useAuth();
   const [formData, setFormData] = useState({
-    clientName: user?.name || "",
-    clientEmail: user?.email || "",
-    clientPhone: "",
-    subject: "",
-    description: "",
+    title: '',
+    description: '',
+    type: 'FAMILY',
+    urgency: 'MEDIUM',
+    attachments: [] as File[],
+    clientName: profile?.name || '',
+    clientEmail: user?.email || '',
+    clientPhone: '',
+    clientAddress: '',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData(prevData => ({
+      ...prevData,
       [name]: value,
     }));
   };
 
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFormData(prevData => ({
+        ...prevData,
+        attachments: [...e.target.files],
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+
+    if (!formData.title || !formData.description) {
+      toast.error("Por favor, preencha o título e a descrição da solicitação.");
+      return;
+    }
+
+    const form = new FormData();
+    form.append('title', formData.title);
+    form.append('description', formData.description);
+    form.append('type', formData.type);
+    form.append('urgency', formData.urgency);
+    form.append('clientName', formData.clientName);
+    form.append('clientEmail', formData.clientEmail);
+    form.append('clientPhone', formData.clientPhone);
+    form.append('clientAddress', formData.clientAddress);
+
+    formData.attachments.forEach(file => {
+      form.append('attachments', file);
+    });
 
     try {
-      const requiredFields = ["clientName", "clientEmail", "clientPhone", "subject", "description"];
-      const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
-      
-      if (missingFields.length > 0) {
-        toast.error("Por favor, preencha todos os campos obrigatórios.");
-        return;
-      }
-
-      await npjService.createClientRequest({
-        ...formData,
-      });
-
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success("Solicitação enviada com sucesso!");
-      navigate("/client/status");
+      setFormData({
+        title: '',
+        description: '',
+        type: 'FAMILY',
+        urgency: 'MEDIUM',
+        attachments: [] as File[],
+        clientName: profile?.name || '',
+        clientEmail: user?.email || '',
+        clientPhone: '',
+        clientAddress: '',
+      });
     } catch (error) {
-      console.error("Error submitting request:", error);
-      toast.error("Ocorreu um erro ao enviar a solicitação. Tente novamente.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Erro ao enviar solicitação:", error);
+      toast.error("Erro ao enviar solicitação. Tente novamente.");
     }
   };
 
   return (
-    <div className="container mx-auto max-w-3xl py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-npj-blue">Nova Solicitação de Atendimento</h1>
-        <p className="text-gray-500">
-          Preencha o formulário abaixo para solicitar atendimento jurídico
-        </p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Formulário de Solicitação</CardTitle>
-          <CardDescription>
-            Todos os campos marcados com * são obrigatórios.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="clientName">
-                Nome Completo *
-              </label>
-              <Input
-                id="clientName"
-                name="clientName"
-                value={formData.clientName}
-                onChange={handleChange}
-                placeholder="Seu nome completo"
-                required
-                disabled={!!user?.name}
-              />
+    <div className="container max-w-3xl mx-auto">
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold text-npj-blue mb-6">Nova Solicitação de Atendimento</h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="mb-6">
+            <Label htmlFor="title" className="block text-sm font-medium text-gray-700">Título da Solicitação</Label>
+            <Input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+          
+          <div className="mb-6">
+            <Label htmlFor="description" className="block text-sm font-medium text-gray-700">Descrição Detalhada</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows={4}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+          
+          <div className="mb-6">
+            <h2 className="text-lg font-medium mb-4 text-npj-blue">Detalhes da Solicitação</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="type" className="block text-sm font-medium text-gray-700">Tipo de Caso</Label>
+                <Select onValueChange={(value) => handleSelectChange('type', value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FAMILY">Família</SelectItem>
+                    <SelectItem value="CIVIL">Civil</SelectItem>
+                    <SelectItem value="CRIMINAL">Criminal</SelectItem>
+                    <SelectItem value="LABOR">Trabalhista</SelectItem>
+                    <SelectItem value="OTHER">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="urgency" className="block text-sm font-medium text-gray-700">Nível de Urgência</Label>
+                <Select onValueChange={(value) => handleSelectChange('urgency', value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione a urgência" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOW">Baixa</SelectItem>
+                    <SelectItem value="MEDIUM">Média</SelectItem>
+                    <SelectItem value="HIGH">Alta</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="clientEmail">
-                Email *
-              </label>
-              <Input
-                id="clientEmail"
-                name="clientEmail"
-                type="email"
-                value={formData.clientEmail}
-                onChange={handleChange}
-                placeholder="seu@email.com"
-                required
-                disabled={!!user?.email}
-              />
+          </div>
+          
+          <div className="mb-6">
+            <Label htmlFor="attachments" className="block text-sm font-medium text-gray-700">Anexos (opcional)</Label>
+            <Input
+              type="file"
+              id="attachments"
+              name="attachments"
+              multiple
+              onChange={handleFileChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          
+          <div className="mb-6">
+            <h2 className="text-lg font-medium mb-4 text-npj-blue">Dados do Cliente</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Nome Completo</label>
+                <input
+                  type="text"
+                  id="clientName"
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  id="clientEmail"
+                  name="clientEmail"
+                  value={formData.clientEmail}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="clientPhone" className="block text-sm font-medium text-gray-700">Telefone</label>
+                <input
+                  type="tel"
+                  id="clientPhone"
+                  name="clientPhone"
+                  value={formData.clientPhone}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="clientAddress" className="block text-sm font-medium text-gray-700">Endereço</label>
+                <input
+                  type="text"
+                  id="clientAddress"
+                  name="clientAddress"
+                  value={formData.clientAddress}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="clientPhone">
-                Telefone *
-              </label>
-              <Input
-                id="clientPhone"
-                name="clientPhone"
-                value={formData.clientPhone}
-                onChange={handleChange}
-                placeholder="(XX) XXXXX-XXXX"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="subject">
-                Assunto *
-              </label>
-              <Input
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                placeholder="Ex: Direito de Família, Direito do Consumidor, etc."
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="description">
-                Descrição do Problema *
-              </label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Descreva detalhadamente sua situação..."
-                rows={5}
-                required
-              />
-              <p className="text-xs text-gray-500">
-                Informe detalhes importantes para que possamos avaliar seu caso adequadamente.
-              </p>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
-            <p className="text-xs text-gray-500 w-full mb-2">
-              Ao enviar este formulário, você concorda com os termos de serviço e
-              política de privacidade do NPJ.
-            </p>
-            <div className="flex w-full justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/client/status")}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                className="bg-npj-blue hover:bg-blue-700"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Enviando..." : "Enviar Solicitação"}
-              </Button>
-            </div>
-          </CardFooter>
+          </div>
+          
+          <div>
+            <Button type="submit" className="bg-npj-blue text-white font-semibold rounded-md py-2 px-4 hover:bg-blue-700">
+              Enviar Solicitação
+            </Button>
+          </div>
         </form>
-      </Card>
+      </div>
     </div>
   );
 };

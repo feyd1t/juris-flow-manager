@@ -8,7 +8,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserCircle, LogOut } from "lucide-react";
 
 const Layout = () => {
-  const { user, logout, isLoading } = useAuth();
+  const { user, profile, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -42,7 +42,7 @@ const Layout = () => {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-npj-gray">
               <UserCircle className="h-5 w-5 text-npj-blue" />
-              <span className="text-sm font-medium">{user.name}</span>
+              <span className="text-sm font-medium">{profile?.name || 'Usuário'}</span>
             </div>
             <Button 
               variant="ghost" 

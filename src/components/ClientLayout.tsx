@@ -6,16 +6,16 @@ import { useAuth } from "@/context/AuthContext";
 import { UserCircle, LogOut } from "lucide-react";
 
 const ClientLayout = () => {
-  const { user, logout, isLoading } = useAuth();
+  const { user, profile, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!isLoading && !user) {
       navigate("/login");
-    } else if (!isLoading && user && user.role !== 'client') {
+    } else if (!isLoading && user && profile && profile.role !== 'client') {
       navigate("/");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, profile, isLoading, navigate]);
 
   if (isLoading || !user) {
     return (
@@ -54,7 +54,7 @@ const ClientLayout = () => {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-npj-gray">
               <UserCircle className="h-5 w-5 text-npj-blue" />
-              <span className="text-sm font-medium">{user.name}</span>
+              <span className="text-sm font-medium">{profile?.name || 'Cliente'}</span>
             </div>
             <Button 
               variant="ghost" 

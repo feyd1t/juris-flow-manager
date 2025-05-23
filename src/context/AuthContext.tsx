@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Session } from '@supabase/supabase-js';
@@ -176,9 +175,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error('Login error:', error);
-        toast.error(error.message);
         setIsLoading(false);
-        return false;
+        // Don't consume the error here, throw it so the component can handle it
+        throw error;
       }
 
       const userProfile = await fetchUserProfile(data.user.id);
@@ -194,9 +193,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return true;
     } catch (error) {
       console.error('Exception during login:', error);
-      toast.error("Erro ao fazer login");
       setIsLoading(false);
-      return false;
+      // Pass the error up to the calling component
+      throw error;
     }
   };
 

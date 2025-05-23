@@ -31,9 +31,16 @@ export const LoginForm = () => {
       if (!success) {
         toast.error("Email ou senha incorretos");
       }
-    } catch (error) {
-      toast.error("Ocorreu um erro ao fazer login");
-      console.error(error);
+    } catch (error: any) {
+      // Handle specific error for email not confirmed
+      if (error?.message === "Email not confirmed") {
+        toast.error(
+          "Email não confirmado. Por favor, verifique sua caixa de entrada e confirme seu email."
+        );
+      } else {
+        toast.error("Ocorreu um erro ao fazer login");
+        console.error(error);
+      }
     } finally {
       setIsLoggingIn(false);
     }
